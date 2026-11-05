@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shorts Script Studio</title>
+<style>
+:root{--bg:#f6f6f4;--card:#fff;--fg:#1c1c1a;--muted:#6b6b66;--line:#e3e3de;--accent:#e5322d;--accent-fg:#fff;--chip:#f0efea;--ok:#1f8a4c;--warn:#b26a00}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--card:#1e1e1c;--fg:#ededea;--muted:#a3a39c;--line:#33332f;--chip:#2a2a27;--ok:#4cc27e;--warn:#e0a040}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif}
+header{padding:20px 16px 0;max-width:1080px;margin:auto}
+h1{font-size:20px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:13px}
+nav{display:flex;gap:4px;overflow-x:auto;margin-top:16px;border-bottom:1px solid var(--line)}
+nav button{background:none;border:0;color:var(--muted);padding:10px 12px;font:inherit;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+nav button.on{color:var(--fg);border-color:var(--accent);font-weight:600}
+main{max-width:1080px;margin:auto;padding:16px}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:end}
+label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+textarea{width:100%;min-height:70px}
+button.btn{font:inherit;background:var(--accent);color:var(--accent-fg);border:0;border-radius:8px;padding:9px 16px;cursor:pointer;font-weight:600}
+button.ghost{font:inherit;background:var(--chip);color:var(--fg);border:0;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:13px}
+button:disabled{opacity:.5;cursor:wait}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:500;font-size:12px}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip{display:inline-block;background:var(--chip);border-radius:999px;padding:2px 9px;font-size:12px;margin:2px 4px 2px 0}
+.chip.on{background:var(--accent);color:var(--accent-fg)}
+.muted{color:var(--muted)}.small{font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.hook{font-size:16px;font-weight:600}
+.status{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;margin-top:8px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;background:var(--warn)}
+.dot.ok{background:var(--ok)}
+.beat{display:grid;grid-template-columns:70px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.beat .t{color:var(--accent);font-weight:600;font-size:13px}
+.err{color:var(--accent);white-space:pre-wrap}
+.overflow{overflow-x:auto}
+h3{margin:0 0 8px;font-size:16px}h4{margin:14px 0 6px;font-size:14px}
+ul{margin:4px 0;padding-left:18px}
+pre{white-space:pre-wrap;background:var(--bg);padding:12px;border-radius:8px;font:inherit}
+a{color:inherit}
+</style>
+</head>
+<body>
+<header>
+  <h1>Shorts Script Studio</h1>
+  <div class="sub">떡상 쇼츠 후킹 분석 → 템플릿 구조화 → 제품 반응 리서치 → 대본 작성</div>
+  <div class="status" id="status"></div>
+  <nav id="tabs">
+    <button data-t="script" class="on">대본 만들기</button>
+    <button data-t="viral">떡상 영상</button>
+    <button data-t="hooks">후킹 라이브러리</button>
+    <button data-t="templates">템플릿</button>
+    <button data-t="history">기록</button>
+  </nav>
+</header>
+<main>
+
+<!-- 대본 만들기 -->
+<section id="script" class="on">
+  <div class="card">
+    <h3>리뷰할 제품</h3>
+    <div class="row">
+      <label style="flex:1;min-width:220px">제품명<input id="product" placeholder="예: 다이슨 에어랩 i.d."></label>
+      <label>길이(초)<input id="length" type="number" value="45" style="width:80px"></label>
+      <label>템플릿<select id="tplPick"><option value="">자동 선택</option></select></label>
+    </div>
+    <label style="margin-top:8px">직접 써본 느낌 / 강조할 점 (선택)<textarea id="notes" placeholder="예: 노캔은 확실히 좋은데 귀가 좀 아픔. 가격 할인 중."></textarea></label>
+    <div class="row" style="margin-top:8px">
+      <button class="btn" id="btnResearch">1. 반응 리서치</button>
+      <button class="btn" id="btnScript">2. 대본 작성</button>
+      <span class="muted small" id="scriptMsg"></span>
+    </div>
+  </div>
+  <div id="researchOut"></div>
+  <div id="scriptOut"></div>
+</section>
+
+<!-- 떡상 영상 -->
+<section id="viral">
+  <div class="card">
+    <h3>떡상 쇼츠 찾기</h3>
+    <p class="muted small" style="margin-top:0">구독자 대비 조회수 배율(떡상 점수)이 높은 쇼츠를 찾고, 상위 영상의 대본·후킹을 자동 분석해 라이브러리에 쌓습니다.</p>
+    <div class="row">
+      <label style="flex:1;min-width:180px">키워드<input id="kw" placeholder="예: 리뷰, 언박싱, 가성비"></label>
+      <label>기간(일)<input id="days" type="number" value="14" style="width:70px"></label>
+      <label>지역<select id="region"><option>KR</option><option>US</option><option>JP</option></select></label>
+      <label>최소 조회수<input id="minViews" type="number" value="50000" style="width:110px"></label>
+      <label>자동분석 개수<input id="analyzeTop" type="number" value="5" style="width:70px"></label>
+      <button class="btn" id="btnCollect">찾기 + 분석</button>
+    </div>
+    <div class="small muted" id="collectMsg" style="margin-top:8px"></div>
+  </div>
+  <div class="card overflow"><table id="videoTable"></table></div>
+  <div id="analysisOut"></div>
+</section>
+
+<!-- 후킹 -->
+<section id="hooks">
+  <div class="card">
+    <div class="row"><label style="flex:1">검색<input id="hookQ" placeholder="문장/공식 검색"></label></div>
+    <div id="hookTypes" style="margin-top:8px"></div>
+  </div>
+  <div class="grid" id="hookList"></div>
+</section>
+
+<!-- 템플릿 -->
+<section id="templates">
+  <div class="card row" style="justify-content:space-between;align-items:center">
+    <div class="muted small">분석된 떡상 영상(3개 이상)을 묶어 템플릿을 새로 만들거나 개선합니다. 기본 템플릿 5개가 미리 들어 있습니다.</div>
+    <div class="row" style="align-items:center"><span class="small muted" id="tplMsg"></span><button class="btn" id="btnTpl">분석 결과로 템플릿 생성</button></div>
+  </div>
+  <div class="grid" id="tplList"></div>
+</section>
+
+<!-- 기록 -->
+<section id="history"><div id="histOut"></div></section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = n => (n ?? 0).toLocaleString("ko-KR");
+const list = a => a && a.length ? `<ul>${a.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : `<div class="muted small">없음</div>`;
+let state = {research: null, hookType: null};
+
+async function api(path, opts = {}) {
+  const r = await fetch(path, {headers: {"Content-Type": "application/json"}, ...opts,
+    body: opts.body ? JSON.stringify(opts.body) : undefined});
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.detail || `요청 실패 (${r.status})`);
+  return data;
+}
+async function busy(btn, msgEl, msg, fn) {
+  btn.disabled = true; msgEl.innerHTML = esc(msg);
+  const t0 = Date.now(), tick = setInterval(() => msgEl.textContent = `${msg} ${Math.round((Date.now()-t0)/1000)}초`, 1000);
+  try { return await fn(); }
+  catch (e) { msgEl.innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+  finally { clearInterval(tick); btn.disabled = false; }
+}
+
+// tabs
+document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#tabs button, section").forEach(x => x.classList.remove("on"));
+  b.classList.add("on"); $("#" + b.dataset.t).classList.add("on");
+  ({viral: loadVideos, hooks: loadHooks, templates: loadTemplates, history: loadHistory})[b.dataset.t]?.();
+});
+
+async function loadStatus() {
+  const s = await api("/api/status");
+  const d = (ok, label) => `<span><span class="dot ${ok ? "ok" : ""}"></span>${label}</span>`;
+  $("#status").innerHTML = d(s.anthropic, "Claude") + d(s.youtube, "YouTube") +
+    d(s.naver, "네이버(선택)") +
+    `<span class="muted">영상 ${s.counts.videos} · 분석 ${s.counts.analyses} · 후킹 ${s.counts.hooks} · 템플릿 ${s.counts.templates} · 대본 ${s.counts.scripts}</span>` +
+    (s.auto_collect.hours > 0 ? `<span class="muted">자동수집 ${s.auto_collect.hours}시간마다</span>` : "");
+}
+
+// ---- 떡상 영상 ----
+$("#btnCollect").onclick = () => busy($("#btnCollect"), $("#collectMsg"), "검색·분석 중… (영상당 30초~1분)", async () => {
+  const r = await api("/api/collect", {method: "POST", body: {
+    keyword: $("#kw").value.trim(), days: +$("#days").value, region: $("#region").value,
+    language: {KR: "ko", US: "en", JP: "ja"}[$("#region").value],
+    min_views: +$("#minViews").value, analyze_top: +$("#analyzeTop").value}});
+  $("#collectMsg").innerHTML = `영상 ${r.found}개 발견 · ${r.analyzed}개 분석 · 새 후킹 멘트 <b>${r.new_hooks}</b>개` +
+    (r.errors.length ? ` · <span class="err">오류 ${r.errors.length}개: ${esc(r.errors[0].error)}</span>` : "");
+  loadVideos(); loadStatus();
+});
+
+async function loadVideos() {
+  const vs = await api("/api/videos");
+  $("#videoTable").innerHTML = `<tr><th>영상</th><th>떡상점수</th><th>조회수</th><th>시간당</th><th>구독자</th><th></th></tr>` +
+    (vs.length ? vs.map(v => `<tr>
+      <td><a href="https://youtube.com/shorts/${v.video_id}" target="_blank">${esc(v.title)}</a><div class="small muted">${esc(v.channel_title)} · ${v.duration_sec}초 · ${esc(v.keyword)}</div></td>
+      <td class="num"><b>${v.viral_score}배</b></td><td class="num">${fmt(v.views)}</td>
+      <td class="num">${fmt(Math.round(v.views_per_hour))}</td><td class="num">${fmt(v.subscribers)}</td>
+      <td>${v.analyzed ? `<button class="ghost" onclick="showAnalysis('${v.video_id}')">분석 보기</button>`
+                       : `<button class="ghost" onclick="analyzeOne('${v.video_id}', this)">분석</button>`}</td></tr>`).join("")
+     : `<tr><td colspan="6" class="muted">아직 수집된 영상이 없습니다.</td></tr>`);
+}
+
+async function analyzeOne(id, btn) {
+  const transcript = prompt("자막을 못 가져오는 영상이면 대본을 붙여넣으세요 (비워두면 자동 추출 시도)") || null;
+  await busy(btn, $("#collectMsg"), "분석 중…", async () => {
+    const r = await api(`/api/videos/${id}/analyze`, {method: "POST", body: {transcript}});
+    $("#collectMsg").textContent = `분석 완료 · 새 후킹 ${r.new_hooks}개` + (r.had_transcript ? "" : " (자막 없이 제목·설명으로 추정)");
+    loadVideos(); showAnalysis(id); loadStatus();
+  });
+}
+
+async function showAnalysis(id) {
+  const {video: v, analysis: a} = await api(`/api/videos/${id}/analysis`);
+  $("#analysisOut").innerHTML = `<div class="card">
+    <h3>${esc(v.title)}</h3><div class="small muted">${esc(a.format_type)} · ${esc(a.summary)}</div>
+    <h4>오프닝 훅</h4><div class="hook">“${esc(a.opening_hook.first_line)}”</div>
+    <span class="chip">${esc(a.opening_hook.hook_type)}</span>
+    <div class="small">화면: ${esc(a.opening_hook.visual_hook)}</div><div class="small muted">${esc(a.opening_hook.why_it_works)}</div>
+    <h4>구조</h4>${a.structure.map(s => `<div class="beat"><div class="t">${s.start_sec}s</div><div><b>${esc(s.section)}</b> — ${esc(s.purpose)}<div class="small">기법: ${esc(s.technique)}</div><div class="small muted">“${esc(s.example_line)}”</div></div></div>`).join("")}
+    <h4>추출된 후킹 멘트</h4>${a.hook_lines.map(h => `<div style="margin-bottom:8px"><b>${esc(h.text)}</b> <span class="chip">${esc(h.hook_type)}</span><div class="small">공식: ${esc(h.pattern)}</div></div>`).join("")}
+    <h4>이탈 방지 장치</h4>${list(a.retention_devices)}
+    <h4>재사용 교훈</h4>${list(a.reusable_lessons)}
+    <div class="small muted">CTA: ${esc(a.cta)} · 페이싱: ${esc(a.pacing_notes)}</div></div>`;
+  $("#analysisOut").scrollIntoView({behavior: "smooth"});
+}
+
+// ---- 후킹 ----
+let hookTimer;
+$("#hookQ").oninput = () => { clearTimeout(hookTimer); hookTimer = setTimeout(loadHooks, 250); };
+async function loadHooks() {
+  const p = new URLSearchParams();
+  if (state.hookType) p.set("type", state.hookType);
+  if ($("#hookQ").value) p.set("q", $("#hookQ").value);
+  const {hooks, types} = await api("/api/hooks?" + p);
+  $("#hookTypes").innerHTML = `<span class="chip ${state.hookType ? "" : "on"}" style="cursor:pointer" onclick="state.hookType=null;loadHooks()">전체</span>` +
+    types.map(t => `<span class="chip ${state.hookType === t.hook_type ? "on" : ""}" style="cursor:pointer" onclick="state.hookType='${esc(t.hook_type)}';loadHooks()">${esc(t.hook_type)} ${t.n}</span>`).join("");
+  $("#hookList").innerHTML = hooks.length ? hooks.map(h => `<div class="card">
+    <div class="hook">${h.favorite ? "★ " : ""}${esc(h.text)}</div>
+    <span class="chip">${esc(h.hook_type)}</span><span class="small muted">떡상 ${h.viral_score ?? "-"}배 · 조회 ${fmt(h.views)}</span>
+    <div class="small" style="margin-top:6px">공식: <b>${esc(h.pattern)}</b></div>
+    <div class="small muted">${esc(h.why_it_works)}</div>
+    <div class="row" style="margin-top:8px">
+      <button class="ghost" onclick="api('/api/hooks/${h.id}/favorite',{method:'POST'}).then(loadHooks)">${h.favorite ? "즐겨찾기 해제" : "즐겨찾기"}</button>
+      ${h.video_id ? `<a class="ghost small" style="text-decoration:none;padding:6px 10px" target="_blank" href="https://youtube.com/shorts/${h.video_id}">원본</a>` : ""}
+      <button class="ghost" onclick="confirm('삭제할까요?')&&api('/api/hooks/${h.id}',{method:'DELETE'}).then(loadHooks)">삭제</button>
+    </div></div>`).join("") : `<div class="muted">아직 수집된 후킹 멘트가 없습니다. '떡상 영상' 탭에서 수집하세요.</div>`;
+}
+
+// ---- 템플릿 ----
+function tplCard(t) {
+  return `<div class="card"><h3>${esc(t.name)}</h3>
+    <div class="small muted">${esc(t.description)} · ${t.target_length_sec}초 · ${t.source === "seed" ? "기본" : "분석 기반"}</div>
+    <div style="margin:6px 0">${t.best_for.map(b => `<span class="chip">${esc(b)}</span>`).join("")}</div>
+    <div class="small">훅 공식: <b>${esc(t.hook_formula)}</b></div>
+    ${t.sections.map(s => `<div class="beat"><div class="t">${esc(s.time_range)}</div><div><b>${esc(s.name)}</b> — ${esc(s.goal)}<div class="small">${esc(s.instructions)}</div><div class="small muted">“${esc(s.example_line)}”</div></div></div>`).join("")}
+    <div class="small" style="margin-top:6px">CTA: ${esc(t.cta_formula)}</div>
+    <div class="small">Do: ${esc(t.do.join(" / "))}</div><div class="small">Don't: ${esc(t.dont.join(" / "))}</div>
+    <button class="ghost" style="margin-top:8px" onclick="confirm('템플릿을 삭제할까요?')&&api('/api/templates/${t.id}',{method:'DELETE'}).then(loadTemplates)">삭제</button></div>`;
+}
+async function loadTemplates() {
+  const ts = await api("/api/templates");
+  $("#tplList").innerHTML = ts.map(tplCard).join("");
+  $("#tplPick").innerHTML = `<option value="">자동 선택</option>` + ts.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join("");
+}
+$("#btnTpl").onclick = () => busy($("#btnTpl"), $("#tplMsg"), "템플릿 생성 중…", async () => {
+  await api("/api/templates/rebuild", {method: "POST"});
+  $("#tplMsg").textContent = "완료"; loadTemplates(); loadStatus();
+});
+
+// ---- 리서치 & 대본 ----
+function renderResearch(r) {
+  const rep = r.report, pts = ps => ps.map(p => `<li><b>${esc(p.point)}</b> <span class="chip">빈도 ${esc(p.frequency)}</span>${p.evidence_quotes.slice(0, 2).map(q => `<div class="small muted">“${esc(q)}”</div>`).join("")}<div class="small muted">${esc(p.sources.join(", "))}</div></li>`).join("");
+  $("#researchOut").innerHTML = `<div class="card"><h3>반응 리서치: ${esc(r.product)}</h3>
+    <div>${esc(rep.overall_sentiment)} <span class="chip">긍정 약 ${rep.positive_pct}%</span></div>
+    ${r.source_counts ? `<div class="small muted">수집량: ${Object.entries(r.source_counts).map(([k, v]) => `${k} ${v}`).join(" · ")}</div>` : ""}
+    <div class="grid" style="margin-top:8px"><div><h4>칭찬</h4><ul>${pts(rep.top_praises)}</ul></div><div><h4>불만</h4><ul>${pts(rep.top_complaints)}</ul></div></div>
+    <h4>논쟁 포인트</h4>${list(rep.controversies)}
+    <h4>자주 묻는 질문</h4>${list(rep.common_questions)}
+    <h4>의외의 인사이트</h4>${list(rep.surprising_insights)}
+    <h4>국내 vs 해외</h4><div>${esc(rep.korea_vs_global)}</div>
+    <h4>경쟁 제품 비교</h4>${list(rep.comparisons.map(c => `${c.competitor}: ${c.verdict}`))}
+    <h4>인용하기 좋은 실제 반응</h4>${list(rep.real_quotes.map(q => `“${q.quote}” — ${q.source}`))}
+    <h4>기획 각도</h4>${list(rep.angle_ideas)}
+    <div class="small muted">${esc(rep.coverage_notes)}</div></div>`;
+}
+function renderScript(r) {
+  const s = r.script;
+  $("#scriptOut").innerHTML = `<div class="card"><h3>쇼츠 대본 · ${esc(s.template_name)}</h3>
+    <div class="small muted">${esc(s.template_reason)}</div>
+    <div class="small">각도: <b>${esc(s.angle)}</b> · 예상 ${s.estimated_length_sec}초</div>
+    <h4>제목 후보</h4>${list(s.title_options)}
+    <h4>훅 후보</h4>${s.hook_options.map(h => `<div style="margin-bottom:6px"><span class="hook">“${esc(h.text)}”</span> <span class="chip">${esc(h.hook_type)}</span><div class="small muted">${esc(h.reason)}</div></div>`).join("")}
+    <h4>대본</h4>${s.beats.map(b => `<div class="beat"><div class="t">${esc(b.time)}<div class="small muted">${esc(b.section)}</div></div><div><div>${esc(b.narration)}</div><div class="small">자막: <b>${esc(b.on_screen_text)}</b></div><div class="small muted">화면: ${esc(b.visual)}</div></div></div>`).join("")}
+    <h4>낭독본 <button class="ghost" onclick="navigator.clipboard.writeText(document.getElementById('narr').innerText)">복사</button></h4><pre id="narr">${esc(s.full_narration)}</pre>
+    <div class="small">CTA: ${esc(s.cta)}</div><div class="small">고정 댓글: ${esc(s.pinned_comment)}</div>
+    <div class="small muted">${esc(s.hashtags.join(" "))}</div>
+    <h4>반영한 리서치</h4>${list(s.research_used)}
+    <h4>촬영 전 확인할 것</h4>${list(s.fact_check_notes)}</div>`;
+  $("#scriptOut").scrollIntoView({behavior: "smooth"});
+}
+
+$("#btnResearch").onclick = () => busy($("#btnResearch"), $("#scriptMsg"), "커뮤니티·SNS 반응 조사 중… (1~3분)", async () => {
+  const product = $("#product").value.trim(); if (!product) throw new Error("제품명을 입력하세요");
+  state.research = await api("/api/research", {method: "POST", body: {product}});
+  renderResearch(state.research); $("#scriptMsg").textContent = "리서치 완료. 대본을 작성하세요."; loadStatus();
+});
+$("#btnScript").onclick = () => busy($("#btnScript"), $("#scriptMsg"), "대본 작성 중…" + (state.research ? "" : " (리서치부터 진행)"), async () => {
+  const product = $("#product").value.trim(); if (!product) throw new Error("제품명을 입력하세요");
+  const rid = state.research && state.research.product === product ? state.research.id : null;
+  const r = await api("/api/scripts", {method: "POST", body: {product, research_id: rid, notes: $("#notes").value,
+    length_sec: +$("#length").value, template_id: +$("#tplPick").value || null}});
+  if (!rid) { state.research = {...await api(`/api/research/${r.research_id}`)}; renderResearch(state.research); }
+  renderScript(r); $("#scriptMsg").textContent = "완료"; loadStatus();
+});
+
+// ---- 기록 ----
+async function loadHistory() {
+  const [ss, rs] = await Promise.all([api("/api/scripts"), api("/api/research")]);
+  $("#histOut").innerHTML = `<div class="card"><h3>대본</h3>${ss.length ? ss.map((s, i) => `<div class="beat"><div class="t small">#${s.id}</div><div><b>${esc(s.product)}</b> · ${esc(s.data.template_name)} <span class="small muted">${esc(s.created_at)}</span><div class="small">${esc(s.data.hook_options[0]?.text)}</div><button class="ghost" onclick="openScript(${i})">열기</button></div></div>`).join("") : `<div class="muted">없음</div>`}</div>
+    <div class="card"><h3>리서치</h3>${rs.length ? rs.map(r => `<div class="beat"><div class="t small">#${r.id}</div><div><b>${esc(r.product)}</b> <span class="small muted">${esc(r.created_at)}</span> <button class="ghost" onclick="openResearch(${r.id})">열기</button></div></div>`).join("") : `<div class="muted">없음</div>`}</div>`;
+  window._scripts = ss;
+}
+function openScript(i) { const s = window._scripts[i]; document.querySelector('[data-t=script]').click(); $("#product").value = s.product; renderScript({script: s.data}); }
+async function openResearch(id) { const r = await api(`/api/research/${id}`); state.research = r; document.querySelector('[data-t=script]').click(); $("#product").value = r.product; renderResearch(r); }
+
+loadStatus(); loadTemplates();
+</script>
+</body>
+</html>
