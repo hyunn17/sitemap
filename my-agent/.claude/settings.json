@@ -3,8 +3,12 @@
     "allow": [
       "Bash(python3 tools/tracker.py:*)",
       "Bash(tools/notify.sh:*)",
+      "Bash(python3 tools/thumbnail.py:*)",
+      "Bash(python3 tools/crop_image.py:*)",
+      "Bash(tools/codex-image.sh:*)",
       "Read(./**)",
       "Edit(./posts/**)",
+      "Write(./assets/**)",
       "Write(./posts/**)",
       "Edit(./.claude/skills/**)",
       "mcp__claude-in-chrome",

@@ -11,7 +11,7 @@ API 키 없이 **Claude Pro/Max 구독**으로 돌아갑니다.
 
 | 하는 일 | 스킬 |
 |---|---|
-| 블로그 글 작성(4유형) → 승인 → 티스토리 발행/예약 | `blog-post` |
+| 블로그 글 작성(4유형) + 썸네일·상세컷·AI 연출컷 → 임시저장 → 승인 → 발행 (shop4uu / todayshopping) | `blog-post` |
 | 네이버·구글 색인 요청 | `index-request` |
 | 스타일씨 체험단 찾기·신청 | `stylec` |
 | 리뷰통 이력 동기화·마감 알림 | `reviewtong` |
@@ -28,7 +28,10 @@ API 키 없이 **Claude Pro/Max 구독**으로 돌아갑니다.
   curl -fsSL https://claude.ai/install.sh | bash   # Claude Code
   curl -fsSL https://bun.sh/install | bash          # 텔레그램 플러그인에 필요
   brew install tmux                                 # 백그라운드 실행용 (Homebrew 필요)
+  python3 -m pip install pillow                     # 썸네일·이미지 자르기
+  npm i -g @openai/codex && codex login             # (선택) 실사 연출 이미지 생성용 Codex CLI
   ```
+- Codex 이미지 생성 확인: `tools/codex-image.sh -o /tmp/t.png -p "책상 위 머그컵 실사 사진"` → `/tmp/t.png`가 생기면 성공
 - 이 저장소를 받고 폴더로 이동: `git clone <저장소 주소> && cd sitemap/my-agent`
 
 ### 2. Chrome에서 직접 로그인해 두기

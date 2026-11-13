@@ -45,7 +45,7 @@ def star(draw, cx, cy, r, fill):
     draw.polygon(pts, fill=fill, outline=OUTLINE)
 
 
-def draw_background(font_path):
+def draw_background(font_path, brand):
     img = Image.new("RGB", (SIZE, SIZE), "#9DE2D5")
     d = ImageDraw.Draw(img)
     rnd = random.Random(7)
@@ -76,7 +76,7 @@ def draw_background(font_path):
     for i in range(5):
         star(d, 650 + i * 62, 960, 26, "#FFC94D")
     logo = ImageFont.truetype(font_path, 44)
-    d.text((120, 935), "쇼핑포유", font=logo, fill="#FFFFFF", stroke_width=5, stroke_fill=OUTLINE)
+    d.text((120, 935), brand, font=logo, fill="#FFFFFF", stroke_width=5, stroke_fill=OUTLINE)
     return img
 
 
@@ -100,12 +100,12 @@ def draw_3d_pop(draw, text, font, y, fill):
     draw.text((x, y), text, font=font, fill=fill, stroke_width=7, stroke_fill=OUTLINE)
 
 
-def generate(lines, output):
+def generate(lines, output, brand="쇼핑포유"):
     font_path = ensure_font()
     if os.path.exists(TEMPLATE):
         base = Image.open(TEMPLATE).convert("RGB").resize((SIZE, SIZE))
     else:
-        base = draw_background(font_path)
+        base = draw_background(font_path, brand)
     draw = ImageDraw.Draw(base)
 
     l, t, r, b = CARD
@@ -132,8 +132,9 @@ def main():
     ap = argparse.ArgumentParser(description="쇼핑포유 3D 팝 썸네일")
     ap.add_argument("lines", nargs=3, help="1행 2행 3행 문구")
     ap.add_argument("-o", "--output", default="posts/thumb.png")
+    ap.add_argument("--brand", default="쇼핑포유", help="좌하단 블로그 이름")
     a = ap.parse_args()
-    generate(a.lines, a.output)
+    generate(a.lines, a.output, a.brand)
 
 
 if __name__ == "__main__":

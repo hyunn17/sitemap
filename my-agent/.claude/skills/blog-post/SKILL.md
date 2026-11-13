@@ -1,6 +1,6 @@
 ---
 name: blog-post
-description: 티스토리 쇼핑포유 블로그(shop4uu.tistory.com) 글을 4가지 유형(A vs B 비교, TOP 3/5, 단일 제품 실사용기, 정보성 꿀팁)으로 조사·집필하고, 3D 썸네일·이미지·제휴 버튼까지 넣어 티스토리에 임시저장한 뒤 승인받아 발행한다. "블로그 글 써줘", "포스팅", "예약발행" 요청에 사용.
+description: 티스토리 블로그(shop4uu.tistory.com, todayshopping.tistory.com) 글을 4가지 유형(A vs B 비교, TOP 3/5, 단일 제품 실사용기, 정보성 꿀팁)으로 조사·집필하고, 3D 썸네일·이미지·제휴 버튼까지 넣어 티스토리에 임시저장한 뒤 승인받아 발행한다. "블로그 글 써줘", "포스팅", "예약발행" 요청에 사용.
 ---
 
 # 블로그 글 작성·발행
@@ -12,7 +12,7 @@ description: 티스토리 쇼핑포유 블로그(shop4uu.tistory.com) 글을 4�
 
 ## 1. 요청 정리
 요청에서 아래를 채우고, 빠진 것만 한 번에 묻습니다.
-- 주제 / 대상 제품 / 유형(`vs`, `top`, `review`, `tip`) / 핵심 강조점
+- 블로그(`shop4uu` / `todayshopping`) / 주제 / 대상 제품 / 유형(`vs`, `top`, `review`, `tip`) / 핵심 강조점
 - **강현님이 실제 쓰는 제품은 어느 것인지** (사진이 있으면 그 제품)
 - 발행 방식: 즉시 / 예약(날짜·시각) / 임시저장만
 
@@ -47,14 +47,32 @@ description: 티스토리 쇼핑포유 블로그(shop4uu.tistory.com) 글을 4�
 
 기록: `python3 tools/tracker.py post-add --type <유형> --title "<제목>" --file posts/<파일>.html`
 
-## 5. 썸네일
+## 5. 썸네일과 본문 이미지 (`posts/<슬러그>/` 폴더에 저장)
+**썸네일**
 ```bash
-python3 tools/thumbnail.py "1행" "2행" "3행" -o posts/<슬러그>-thumb.png
+python3 tools/thumbnail.py "1행" "2행" "3행" --brand 쇼핑포유 -o posts/<슬러그>/thumb.png
 ```
-행당 4~6자 권장 (예: "카본매트" / "온수매트" / "실사용비교"). 결과 이미지를 직접 열어 글자 잘림이 없는지 확인합니다.
+행당 4~6자 권장. 결과를 직접 열어 글자 잘림이 없는지 확인합니다.
+
+**상세페이지 캡처** — 소제목마다 설명에 맞는 부분을 찾아 자르기
+1. 쿠팡 상세페이지에서 상세 이미지 URL을 찾습니다 (상세 영역 `<img>`의 src, 대부분 세로로 긴 이미지).
+2. `python3 tools/crop_image.py <URL> --info` 로 크기 확인 → 브라우저 화면에서 필요한 부분의 위치를 보고 범위 지정:
+   `python3 tools/crop_image.py <URL> -o posts/<슬러그>/detail-1.jpg --top 2400 --bottom 3300`
+3. 잘린 결과를 열어 보고 글자가 잘렸으면 범위를 조정합니다.
+4. 이미지 URL을 못 찾는 상세페이지는 브라우저 스크린샷으로 대신합니다.
+
+**실사 연출 이미지 (Codex CLI)** — 실사진이 부족한 소제목에만
+```bash
+tools/codex-image.sh -o posts/<슬러그>/scene-1.png -i posts/<슬러그>/product.jpg \
+  -p "아늑한 침실 퀸 침대 위에 깔린 카본매트, 저녁 간접조명, 자연스러운 생활 사진"
+```
+- `-i` 상품 대표 이미지(쿠팡 상품 이미지 저장)로 제품 모양·색을 맞춥니다.
+- 결과를 직접 열어 제품이 원본과 다르게 그려졌거나(버튼·로고·색 변형) 어색하면 다시 생성하거나 버립니다.
+- Codex 실패 시 2번까지 재시도, 그래도 안 되면 상세페이지 캡처로 대체하고 텔레그램에 알립니다.
+- 캡션 규칙은 `style-guide.md` 6번.
 
 ## 6. 티스토리에 임시저장 (브라우저)
-1. `https://shop4uu.tistory.com/manage/newpost` 열기 (로그인 안 돼 있으면 강현님께 요청)
+1. `https://<블로그>.tistory.com/manage/newpost` 열기 (`shop4uu` 또는 `todayshopping`, 로그인 안 돼 있으면 강현님께 요청)
 2. 기본모드 → **HTML** 모드 전환 (확인 대화상자 수락)
 3. 에디터에 원고 넣기. 붙여넣기가 잘 안 되면 페이지에서 실행:
    ```javascript
