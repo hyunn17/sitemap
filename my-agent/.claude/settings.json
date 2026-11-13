@@ -11,6 +11,10 @@
       "Write(./assets/**)",
       "Write(./posts/**)",
       "Edit(./.claude/skills/**)",
+      "Write(./.claude/skills/**)",
+      "Edit(./data/notes.md)",
+      "Write(./data/notes.md)",
+      "Edit(./CLAUDE.md)",
       "mcp__claude-in-chrome",
       "WebSearch",
       "WebFetch"
