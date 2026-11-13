@@ -1,0 +1,5 @@
+data/*
+!data/.gitkeep
+posts/*
+!posts/.gitkeep
+.DS_Store

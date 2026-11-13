@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- 설치: README의 "매일 아침 요약" 참고. __AGENT_DIR__ 은 install 명령이 실제 경로로 바꿉니다. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.my-agent.daily</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>__AGENT_DIR__/scripts/daily-summary.sh</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>8</integer>
+    <key>Minute</key>
+    <integer>37</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/tmp/my-agent-daily.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/my-agent-daily.log</string>
+</dict>
+</plist>
