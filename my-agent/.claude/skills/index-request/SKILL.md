@@ -8,7 +8,7 @@ description: 발행된 블로그 글 URL을 네이버 서치어드바이저(웹�
 대상 URL: 요청에 있으면 그것, 없으면 `python3 tools/tracker.py posts --not-indexed`로 미등록 글 목록.
 
 ## 네이버 서치어드바이저
-1. `https://searchadvisor.naver.com/console/board` → 사이트 `https://todayshopping.tistory.com` 선택
+1. `https://searchadvisor.naver.com/console/board` → 사이트 `https://shop4uu.tistory.com` 선택
 2. 요청 → **웹페이지 수집** → URL 입력 → 확인
 3. 하루 요청 한도가 있으니 "한도 초과"가 뜨면 멈추고 남은 URL은 내일로 미룹니다.
 4. 성공하면 `python3 tools/tracker.py post-indexed <ID> --engine naver`
